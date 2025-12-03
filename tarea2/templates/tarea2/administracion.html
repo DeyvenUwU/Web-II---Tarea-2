@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Administración Estados y Municipios</title>
+  <style>
+    body{font-family:Segoe UI,Arial;margin:20px}
+    fieldset{margin-bottom:16px}
+    ul{padding-left:20px}
+    button{margin-left:6px}
+  </style>
+  <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body>
+  <h1>Administración - Estados y Municipios</h1>
+
+  <fieldset>
+    <legend>Agregar Estado</legend>
+    <form id="formularioEstado">
+      {% csrf_token %}
+      {{ formularioEstado.as_p }}
+      <button type="submit">Crear Estado</button>
+    </form>
+  </fieldset>
+
+  <fieldset>
+    <legend>Agregar Municipio</legend>
+    <form id="formularioMunicipio">
+      {% csrf_token %}
+      {{ formularioMunicipio.as_p }}
+      <button type="submit">Crear Municipio</button>
+    </form>
+  </fieldset>
+
+  <section>
+    <h2>Lista de Estados</h2>
+    <div id="contenedorEstados">
+      <p>Cargando...</p>
+    </div>
+  </section>
+
+  <script src="{% static 'tarea2/administracion.js' %}"></script>
+</body>
+</html>
