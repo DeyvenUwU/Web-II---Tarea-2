@@ -22,16 +22,10 @@ def _estado_to_dict(estado):
 		'id': estado.id,
 		'nombre': estado.nombre,
 		'abreviatura': estado.abreviatura,
-		'capital': estado.capital,
-		'poblacion': estado.poblacion,
-		'superficie': str(estado.superficie) if estado.superficie is not None else None,
 		'municipios': [
 			{
 				'id': m.id,
 				'nombre': m.nombre,
-				'poblacion': m.poblacion,
-				'superficie': str(m.superficie) if m.superficie is not None else None,
-				'cp': m.cp,
 			} for m in estado.municipios.all().order_by('nombre')
 		]
 	}
@@ -85,9 +79,6 @@ def api_municipios_create(request, estado_id):
 		return JsonResponse({'ok': True, 'municipio': {
 			'id': municipio.id,
 			'nombre': municipio.nombre,
-			'poblacion': municipio.poblacion,
-			'superficie': str(municipio.superficie) if municipio.superficie is not None else None,
-			'cp': municipio.cp,
 			'estado_id': estado.id,
 		}})
 	return JsonResponse({'ok': False, 'errores': formulario.errors}, status=400)
@@ -97,15 +88,14 @@ def api_municipios_create(request, estado_id):
 @require_http_methods(["POST"])
 def api_municipios_edit(request, municipio_id):
 	municipio = get_object_or_404(Municipio, pk=municipio_id)
-	formulario = MunicipioForm(request.POST, instance=municipio)
+	data = request.POST.copy()
+	data['estado'] = municipio.estado.id
+	formulario = MunicipioForm(data, instance=municipio)
 	if formulario.is_valid():
 		municipio = formulario.save()
 		return JsonResponse({'ok': True, 'municipio': {
 			'id': municipio.id,
 			'nombre': municipio.nombre,
-			'poblacion': municipio.poblacion,
-			'superficie': str(municipio.superficie) if municipio.superficie is not None else None,
-			'cp': municipio.cp,
 			'estado_id': municipio.estado.id,
 		}})
 	return JsonResponse({'ok': False, 'errores': formulario.errors}, status=400)

@@ -41,15 +41,27 @@ function renderizarEstados(estados){
 
   var ulEstados = document.createElement('ul');
   estados.forEach(function(estado){
+    var liTexto = '<strong>'+estado.nombre+'</strong>';
+    if(estado.abreviatura){
+      liTexto += ' ('+estado.abreviatura+')';
+    }
+    liTexto += ' <button data-id="'+estado.id+'" class="editarEstado">Editar</button> <button data-id="'+estado.id+'" class="borrarEstado">Borrar</button>';
+    
     var li = document.createElement('li');
-    li.innerHTML = '<strong>'+estado.nombre+'</strong> ('+(estado.abreviatura||'')+') - Capital: '+(estado.capital||'')+' - Población: '+(estado.poblacion||'')+' <button data-id="'+estado.id+'" class="editarEstado">Editar</button> <button data-id="'+estado.id+'" class="borrarEstado">Borrar</button>';
+    li.innerHTML = liTexto;
 
     var ulMun = document.createElement('ul');
-    estado.municipios.forEach(function(m){
-      var mLi = document.createElement('li');
-      mLi.innerHTML = m.nombre + ' - Población: ' + (m.poblacion||'') + ' <button data-id="'+m.id+'" class="editarMunicipio">Editar</button> <button data-id="'+m.id+'" class="borrarMunicipio">Borrar</button>';
-      ulMun.appendChild(mLi);
-    });
+    if(estado.municipios && estado.municipios.length > 0){
+      estado.municipios.forEach(function(m){
+        var mLi = document.createElement('li');
+        mLi.innerHTML = '<strong>'+m.nombre+'</strong> <button data-id="'+m.id+'" class="editarMunicipio">Editar</button> <button data-id="'+m.id+'" class="borrarMunicipio">Borrar</button>';
+        ulMun.appendChild(mLi);
+      });
+    } else {
+      var emptyLi = document.createElement('li');
+      emptyLi.innerHTML = '<em>Sin municipios</em>';
+      ulMun.appendChild(emptyLi);
+    }
     li.appendChild(ulMun);
     ulEstados.appendChild(li);
   });
@@ -98,13 +110,26 @@ document.getElementById('formularioEstado').addEventListener('submit', function(
 
 function editarEstadoPrompt(id){
   var nombreEstado = prompt('Nuevo nombre de estado:');
-  if(nombreEstado === null) return;
+  if(nombreEstado === null || nombreEstado.trim() === '') return;
+  var abreviaturaEstado = prompt('Nueva abreviatura (opcional):');
+  if(abreviaturaEstado === null) return;
+  
   var datos = new FormData();
-  datos.append('nombre', nombreEstado);
+  datos.append('nombre', nombreEstado.trim());
+  if(abreviaturaEstado.trim()) {
+    datos.append('abreviatura', abreviaturaEstado.trim());
+  }
+  
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/tarea2/api/estados/'+id+'/edit/');
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-  xhr.onload = function(){ if(xhr.status===200) cargarEstados(); else alert('Error: '+xhr.responseText); };
+  xhr.onload = function(){ 
+    if(xhr.status===200) { 
+      cargarEstados(); 
+    } else { 
+      alert('Error: '+xhr.responseText); 
+    } 
+  };
   xhr.send(datos);
 }
 
@@ -131,14 +156,22 @@ document.getElementById('formularioMunicipio').addEventListener('submit', functi
 });
 
 function editarMunicipioPrompt(id){
-  var nombreMun = prompt('Nuevo nombre municipio:');
-  if(nombreMun === null) return;
+  var nombreMun = prompt('Nuevo nombre del municipio:');
+  if(nombreMun === null || nombreMun.trim() === '') return;
+  
   var datos = new FormData();
-  datos.append('nombre', nombreMun);
+  datos.append('nombre', nombreMun.trim());
+  
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/tarea2/api/municipios/'+id+'/edit/');
   xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-  xhr.onload = function(){ if(xhr.status===200) cargarEstados(); else alert('Error: '+xhr.responseText); };
+  xhr.onload = function(){ 
+    if(xhr.status===200) { 
+      cargarEstados(); 
+    } else { 
+      alert('Error: '+xhr.responseText); 
+    } 
+  };
   xhr.send(datos);
 }
 

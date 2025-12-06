@@ -4,9 +4,6 @@ from django.db import models
 class Estado(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     abreviatura = models.CharField(max_length=10, blank=True, null=True)
-    capital = models.CharField(max_length=100, blank=True, null=True)
-    poblacion = models.PositiveIntegerField(blank=True, null=True)
-    superficie = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     class Meta:
         verbose_name = "Estado"
@@ -19,9 +16,6 @@ class Estado(models.Model):
 
 class Municipio(models.Model):
     nombre = models.CharField(max_length=100)
-    poblacion = models.PositiveIntegerField(blank=True, null=True)
-    superficie = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    cp = models.CharField(max_length=10, blank=True, null=True)
 
     estado = models.ForeignKey(
         Estado,
